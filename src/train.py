@@ -1,5 +1,6 @@
 import argparse
 import os
+import joblib
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -21,24 +22,20 @@ def main(test_size, random_state):
 
     model = DecisionTreeClassifier(random_state=random_state)
     model.fit(X_train, y_train)
+    os.makedirs("outputs", exist_ok=True)
+    joblib.dump(model, "outputs/iris_model.pkl")
+    print("Model saved as outputs/iris_model.pkl")
 
-    
     y_pred = model.predict(X_test)
     print("Predictions:", y_pred[:5])
     print("True labels:", y_test[:5])
 
-    
     accuracy = accuracy_score(y_test, y_pred)
     print("Accuracy:", accuracy)
 
-    
     cm = confusion_matrix(y_test, y_pred)
     print(cm)
 
-    
-    os.makedirs("outputs", exist_ok=True)
-
-    
     plt.figure(figsize=(6, 4))
     sns.heatmap(cm, annot=True, fmt="d",
                 xticklabels=iris.target_names,
@@ -55,12 +52,9 @@ def main(test_size, random_state):
 
 if __name__ == "__main__":
 
-    
     parser = argparse.ArgumentParser()
-
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--random-state", type=int, default=42)
-
     args = parser.parse_args()
 
     main(args.test_size, args.random_state)
